@@ -19,11 +19,14 @@ from apigw_iam_client import Client
 class MyApi(Client):
 
    def list_oranges(self, store_id='all'):
-       return self.http.get(
-	       "%s/%s/oranges" % (self.endpoint, store_id),
-		   auth=self.get_api_auth())
-		   
-client = MyApi('bhttps://foix.execute-api.us-east-1.amazonaws.com/dev/')
+       return self.get("%s/oranges" % store_id).json()
+
+```
+
+```python
+>> client = MyApi('bhttps://foix.execute-api.us-east-1.amazonaws.com/dev/')
+>> client.list_oranges()
+{'version': '0.1.0', 'oranges': []}
 
 ```
 

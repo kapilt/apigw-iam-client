@@ -7,12 +7,12 @@ from botocore.awsrequest import AWSRequest
 import requests
 
 
-class GatewayIAMClient(object):
+class Client(object):
     
     def __init__(
             self, endpoint, role=None, profile=None, region=None,
             http=None, session=None, session_name=None):
-        self.endpoint = endpoint
+        self.endpoint = endpoint.rstrip('/')
         self.role = role
         self.profile = profile
         self.region = region
@@ -20,9 +20,20 @@ class GatewayIAMClient(object):
         self.session = session or self.get_session()
         self.session_name = session_name
 
+    def get(self, path, **kw):
+        return self.http.get(
+            "%s/%s" % (self.endpoint, path.lstrip('/')),
+            auth=self.get_api_auth(),
+            params=kw)
+
+    def post(self, path, **kw):
+        return self.http.post(
+            "%s/%s" % (self.endpoint, path.lstrip('/')),
+            json=kw, auth=self.get_api_auth())
+
     def get_api_auth(self):
         return SignatureAuth(
-            self.api_session.get_credentials(),
+            self.session.get_credentials(),
             self.get_region(),
             "execute-api")
 
